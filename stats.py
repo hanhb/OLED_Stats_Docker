@@ -81,8 +81,8 @@ while True:
         # Icon disk
         draw.text((1, 48), chr(63426), font=icon_font, fill=255)
         # Icon time right
-        draw.text((111, 48), chr(62034), font=icon_font, fill=255)
-
+        draw.text((111, 48), chr(61926), font=icon_font, fill=255)
+        print("Battery " + piups.getPercentString())
         # Pi Stats Display, printed from left to right each line
         draw.text((22, 0), str(IP,'utf-8'), font=font, fill=255) # x y followed by the content to be printed on the display followed by how it should be printed
         draw.text((22, 16), str(CPU,'utf-8') + "%", font=font, fill=255)
