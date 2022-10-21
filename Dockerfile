@@ -14,6 +14,6 @@ WORKDIR /opt/stats
 
 COPY PixelOperator.ttf lineawesome-webfont.ttf stats.py requirements.txt ina219.py /opt/stats/
 
-RUN --mount=type=cache,mode=0777,target=/root/.cache/pip pip install -r requirements.txt 
+RUN --mount=type=cache,mode=0755,target=/root/.cache/pip pip install -r requirements.txt 
 
 ENTRYPOINT [ "python", "stats.py" ]
