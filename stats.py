@@ -6,6 +6,7 @@
 import time
 import board
 import busio
+from ina219 import INA219
 import digitalio
 import adafruit_ssd1306
 import subprocess
@@ -30,7 +31,7 @@ end = int(end)
 current = int(current)
 
 # Methode to control the display with oled func
-oled = adafruit_ssd1306.SSD1306_I2C(width, height, board.I2C(), addr=0x3C, reset=digitalio.DigitalInOut(board.D4))
+oled = adafruit_ssd1306.SSD1306_I2C(width, height, board.I2C(), addr=0x3C)
 
 # Clear display.
 oled.fill(0)
@@ -41,6 +42,7 @@ image = Image.new('1', (oled.width, oled.height))
 
 # Get drawing object to draw on image
 draw = ImageDraw.Draw(image)
+piups = INA219(i2c_bus=2, addr=0x42)
 
 # Import custom fonts
 font = ImageFont.truetype('PixelOperator.ttf', font_sz)
@@ -88,7 +90,7 @@ while True:
         draw.text((22, 32), str(Memuseper,'utf-8') + "%", font=font, fill=255)
         draw.text((125, 32), str(Memuse,'utf-8') + "/" + str(MemTotal,'utf-8') + "G", font=font, fill=255, anchor="ra")
         draw.text((22, 48), str(Disk,'utf-8'), font=font, fill=255)
-        draw.text((107, 48), str(uptime,'utf-8'), font=font, fill=255, anchor="ra")
+        draw.text((107, 48), piups.getPercentString(), font=font, fill=255, anchor="ra")
 
         # Display image
         oled.image(image)
