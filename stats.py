@@ -42,7 +42,10 @@ image = Image.new('1', (oled.width, oled.height))
 
 # Get drawing object to draw on image
 draw = ImageDraw.Draw(image)
+
 piups = INA219(i2c_bus=2, addr=0x42)
+power_display_methods = ['percent','current']
+power_display_index = 0
 
 # Import custom fonts
 font = ImageFont.truetype('PixelOperator.ttf', font_sz)
@@ -51,6 +54,12 @@ while True:
     while (start < current < end):
         current = datetime.datetime.now().time().strftime('%H')
         current = int(current)
+
+        battery_current = piups.getCurrentDrawAmp()
+        power_icon = 61926 if battery_current > 0 else 62018
+        power_display_index = 0 if power_display_index > 0 else 1
+        power_display_value = piups.getPercentString() if power_display_methods[power_display_index] == 'percent' else piups.getCurrentDrawAmpString()
+
         draw.rectangle((0, 0, oled.width, oled.height), fill=0) # Draw a black filled box to clear the image.
         cmd = "ip addr | awk '/inet / { print $2 }' | sed -n '2{p;q}' | cut -d '/' -f1" # Command that's executed in bash
         IP = subprocess.check_output(cmd, shell = True ) # Register ouput from cmd in var
@@ -80,9 +89,10 @@ while True:
         draw.text((1, 32), chr(62776), font=icon_font, fill=255)
         # Icon disk
         draw.text((1, 48), chr(63426), font=icon_font, fill=255)
-        # Icon time right
-        draw.text((111, 48), chr(61926), font=icon_font, fill=255)
-        print("Battery " + piups.getPercentString())
+        # Power icon right
+        draw.text((111, 48), chr(power_icon), font=icon_font, fill=255)
+        # 
+        
         # Pi Stats Display, printed from left to right each line
         draw.text((22, 0), str(IP,'utf-8'), font=font, fill=255) # x y followed by the content to be printed on the display followed by how it should be printed
         draw.text((22, 16), str(CPU,'utf-8') + "%", font=font, fill=255)
@@ -90,7 +100,7 @@ while True:
         draw.text((22, 32), str(Memuseper,'utf-8') + "%", font=font, fill=255)
         draw.text((125, 32), str(Memuse,'utf-8') + "/" + str(MemTotal,'utf-8') + "G", font=font, fill=255, anchor="ra")
         draw.text((22, 48), str(Disk,'utf-8'), font=font, fill=255)
-        draw.text((107, 48), piups.getPercentString(), font=font, fill=255, anchor="ra")
+        draw.text((107, 48), power_display_value, font=font, fill=255, anchor="ra")
 
         # Display image
         oled.image(image)

@@ -197,7 +197,13 @@ class INA219:
     
     def getPercentString(self):
         return "{:3.1f}%".format(self.getPercent())
-        
+
+    def getCurrentDrawAmp(self):
+        return (self.getCurrent_mA() / 1000)
+    
+    def getCurrentDrawAmpString(self):
+        return "{:9.2f} A".format(self.getCurrentDrawAmp())
+
 # if __name__=='__main__':
 
 #     # Create an INA219 instance.
